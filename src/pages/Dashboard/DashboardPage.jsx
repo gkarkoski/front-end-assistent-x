@@ -1,0 +1,207 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import KpiCard from '../../components/charts/KpiCard'
+import OriginBreakdown from '../../components/charts/OriginBreakdown'
+import StatusBadge from '../../components/charts/StatusBadge'
+import Card from '../../components/ui/Card'
+import Spinner from '../../components/ui/Spinner'
+import { getResumoEntradas, getResumoSaidas } from '../../api/transacoes'
+import { getResumoPatrimonio } from '../../api/investimentos'
+import { getResumoOrcamento } from '../../api/usuario'
+import { useAuth } from '../../context/AuthContext'
+import { formatCurrency } from '../../utils/currency'
+import { getStatusConfig } from '../../utils/budgetStatus'
+import ProgressBar from '../../components/charts/ProgressBar'
+
+export default function DashboardPage() {
+  const { token, usuarioId, user } = useAuth()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [entradas, setEntradas] = useState(null)
+  const [saidas, setSaidas] = useState(null)
+  const [patrimonio, setPatrimonio] = useState(null)
+  const [orcamento, setOrcamento] = useState(null)
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      setError('')
+      try {
+        const [e, s, p] = await Promise.all([
+          getResumoEntradas(token, usuarioId),
+          getResumoSaidas(token, usuarioId),
+          getResumoPatrimonio(token, usuarioId),
+        ])
+        setEntradas(e)
+        setSaidas(s)
+        setPatrimonio(p)
+
+        if (user?.modeloId) {
+          const o = await getResumoOrcamento(token, usuarioId, user.modeloId)
+          setOrcamento(o)
+        }
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [token, usuarioId, user?.modeloId])
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-24">
+        <Spinner className="h-10 w-10" />
+      </div>
+    )
+  }
+
+  const saldo = (entradas?.valorTotalEntradas ?? 0) - (saidas?.valorTotalSaidas ?? 0)
+  const alertas =
+    orcamento?.categorias?.filter((c) =>
+      ['POUCO_ACIMA_DO_LIMITE', 'MUITO_ACIMA_DO_LIMITE'].includes(c.status),
+    ) ?? []
+
+  return (
+    <div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+          Olá, {user?.nome?.split(' ')[0] ?? 'usuário'}
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Visão geral das suas finanças
+        </p>
+      </div>
+
+      {error && (
+        <p className="mb-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:bg-rose-500/10">
+          {error}
+        </p>
+      )}
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard
+          title="Entradas"
+          value={formatCurrency(entradas?.valorTotalEntradas)}
+          accent="text-emerald-600 dark:text-emerald-400"
+          icon="↗"
+          to="/entradas"
+        />
+        <KpiCard
+          title="Saídas"
+          value={formatCurrency(saidas?.valorTotalSaidas)}
+          accent="text-rose-600 dark:text-rose-400"
+          icon="↘"
+          to="/saidas"
+        />
+        <KpiCard
+          title="Patrimônio"
+          value={formatCurrency(patrimonio?.valorAtualTotal)}
+          subtitle={`Rendimento: ${((patrimonio?.jurosEstimados ?? 0) * 100).toFixed(2)}% a.m.`}
+          accent="text-sky-600 dark:text-sky-400"
+          icon="💎"
+          to="/patrimonio"
+        />
+        <KpiCard
+          title="Saldo"
+          value={formatCurrency(saldo)}
+          subtitle="Entradas − saídas"
+          accent={saldo >= 0 ? 'text-emerald-600' : 'text-rose-600'}
+          icon="⚖"
+        />
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Card title="Entradas por origem">
+          <OriginBreakdown
+            origens={entradas?.origens}
+            total={entradas?.valorTotalEntradas}
+            colorClass="bg-emerald-500"
+          />
+        </Card>
+        <Card title="Saídas por origem">
+          <OriginBreakdown
+            origens={saidas?.origens}
+            total={saidas?.valorTotalSaidas}
+            colorClass="bg-rose-500"
+          />
+        </Card>
+      </div>
+
+      {patrimonio?.classificacoes?.length > 0 && (
+        <Card title="Patrimônio por classificação" className="mt-6">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {patrimonio.classificacoes.map((c) => (
+              <div
+                key={c.classificacao}
+                className="rounded-xl border border-slate-100 p-4 dark:border-slate-800"
+              >
+                <p className="text-sm font-medium">{c.classificacao}</p>
+                <p className="mt-1 text-lg font-bold tabular-nums text-sky-600 dark:text-sky-400">
+                  {formatCurrency(c.valorAtualTotal)}
+                </p>
+                <p className="text-xs text-slate-500">
+                  Inicial: {formatCurrency(c.valorInicialTotal)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {orcamento ? (
+        <Card
+          title="Orçamento por categoria"
+          subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
+          className="mt-6"
+          action={
+            <Link
+              to="/orcamento"
+              className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+            >
+              Ver detalhes →
+            </Link>
+          }
+        >
+          {alertas.length > 0 && (
+            <div className="mb-4 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
+              {alertas.length} categoria(s) acima do limite recomendado.
+            </div>
+          )}
+          <ul className="space-y-4">
+            {orcamento.categorias?.map((cat) => {
+              const cfg = getStatusConfig(cat.status)
+              return (
+                <li key={cat.categoriaId}>
+                  <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-sm font-medium">{cat.categoriaNome}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs tabular-nums text-slate-500">
+                        {cat.percentualUtilizado?.toFixed(0)}%
+                      </span>
+                      <StatusBadge status={cat.status} />
+                    </div>
+                  </div>
+                  <ProgressBar percent={cat.percentualUtilizado} barClassName={cfg.bar} />
+                  <p className="mt-1 text-xs text-slate-500">
+                    {formatCurrency(cat.valorUtilizado)} de {formatCurrency(cat.limite)}
+                  </p>
+                </li>
+              )
+            })}
+          </ul>
+        </Card>
+      ) : (
+        <Card title="Orçamento" className="mt-6">
+          <p className="text-sm text-slate-500">
+            Nenhum modelo vinculado.{' '}
+            <Link to="/orcamento" className="text-emerald-600 hover:underline">
+              Escolha um plano
+            </Link>
+          </p>
+        </Card>
+      )}
+    </div>
+  )
+}
