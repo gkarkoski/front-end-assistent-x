@@ -2,12 +2,11 @@ import { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
+import ThemeToggle from '../../components/ui/ThemeToggle'
 import { useAuth } from '../../context/AuthContext'
-import { useTheme } from '../../context/ThemeContext'
 
 export default function LoginPage() {
   const { login, loading, isAuthenticated } = useAuth()
-  const { isDark, toggleTheme } = useTheme()
   const [usuario, setUsuario] = useState('joao@email.com.br')
   const [senha, setSenha] = useState('senha')
   const [error, setError] = useState('')
@@ -52,13 +51,7 @@ export default function LoginPage() {
 
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12">
         <div className="absolute right-4 top-4 lg:right-8 lg:top-8">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="rounded-xl border border-slate-200 p-2 text-sm dark:border-slate-700"
-          >
-            {isDark ? '☀️' : '🌙'}
-          </button>
+          <ThemeToggle />
         </div>
 
         <div className="mx-auto w-full max-w-md">
