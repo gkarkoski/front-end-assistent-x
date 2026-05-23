@@ -31,8 +31,8 @@ export default function Sidebar({ mobileOpen, onClose }) {
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-900 lg:static lg:h-screen lg:translate-x-0 ${
-          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-900 lg:z-40 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         <div className="flex h-16 shrink-0 items-center border-b border-slate-200 px-5 dark:border-slate-800">
@@ -58,7 +58,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
           ))}
         </nav>
 
-        <div className="mt-auto shrink-0 border-t border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+        <div className="mt-auto shrink-0 border-t border-slate-200 p-4 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <div
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-sm font-semibold text-emerald-700 dark:text-emerald-400"
