@@ -14,7 +14,7 @@ SPA React para finanças pessoais, integrada ao backend Java em `FullStackAssist
 1. **Backend** rodando em `http://localhost:8080`
 2. **Node.js** 18+ instalado
 
-## Como rodar
+## Como Executar
 
 ```bash
 cd front-end-full-stack-assistant
