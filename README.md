@@ -24,7 +24,7 @@ npm run dev
 
 Acesse: http://localhost:5173
 
-O Vite faz proxy de `/api` para `http://localhost:8080` (evita CORS em desenvolvimento).
+O Vite faz proxy de `/api` para `http://localhost:8080`.
 
 ## Login de teste
 
@@ -64,7 +64,5 @@ src/
 ```
 
 ## Projeto relacionado
-
-Backend: `../FullStackAssistentx/backend`
 
 Documentação da API: `../FullStackAssistentx/README.md`
