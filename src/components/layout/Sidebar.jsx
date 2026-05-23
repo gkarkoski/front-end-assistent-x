@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router-dom'
+import Button from '../ui/Button'
+import { useAuth } from '../../context/AuthContext'
 import Logo from './Logo'
 
 const navItems = [
@@ -9,7 +11,16 @@ const navItems = [
   { to: '/orcamento', label: 'Orçamento', icon: '📋' },
 ]
 
+function userInitials(nome) {
+  if (!nome) return '?'
+  const parts = nome.trim().split(/\s+/)
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+}
+
 export default function Sidebar({ mobileOpen, onClose }) {
+  const { user, logout } = useAuth()
+
   return (
     <>
       {mobileOpen && (
@@ -20,14 +31,14 @@ export default function Sidebar({ mobileOpen, onClose }) {
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-900 lg:static lg:translate-x-0 ${
-          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-900 lg:z-40 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        <div className="flex h-16 items-center border-b border-slate-200 px-5 dark:border-slate-800">
+        <div className="flex h-16 shrink-0 items-center border-b border-slate-200 px-5 dark:border-slate-800">
           <Logo />
         </div>
-        <nav className="flex-1 space-y-1 p-3">
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -46,9 +57,29 @@ export default function Sidebar({ mobileOpen, onClose }) {
             </NavLink>
           ))}
         </nav>
-        <p className="border-t border-slate-200 p-4 text-[10px] text-slate-400 dark:border-slate-800">
-          Assistentx · FIAP
-        </p>
+
+        <div className="mt-auto shrink-0 border-t border-slate-200 p-4 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-sm font-semibold text-emerald-700 dark:text-emerald-400"
+              aria-hidden
+            >
+              {userInitials(user?.nome)}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
+                {user?.nome}
+              </p>
+              <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+                {user?.modeloNome ?? 'Sem modelo'}
+              </p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={logout} className="shrink-0 px-2">
+              Sair
+            </Button>
+          </div>
+          <p className="mt-3 text-center text-[10px] text-slate-400">Assistentx · FIAP</p>
+        </div>
       </aside>
     </>
   )
