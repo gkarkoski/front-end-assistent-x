@@ -9,6 +9,7 @@ const navItems = [
   { to: '/saidas', label: 'Saídas', icon: '↘' },
   { to: '/patrimonio', label: 'Patrimônio', icon: '💎' },
   { to: '/orcamento', label: 'Orçamento', icon: '📋' },
+  { to: '/modelos', label: 'Modelos', icon: '🧩' },
 ]
 
 function userInitials(nome) {

@@ -9,6 +9,7 @@ import EntradasPage from '../pages/Entradas/EntradasPage'
 import SaidasPage from '../pages/Saidas/SaidasPage'
 import PatrimonioPage from '../pages/Patrimonio/PatrimonioPage'
 import OrcamentoPage from '../pages/Orcamento/OrcamentoPage'
+import ModelosPage from '../pages/Modelos/ModelosPage'
 import NotFoundPage from '../pages/NotFound/NotFoundPage'
 
 export default function AppRoutes() {
@@ -25,6 +26,7 @@ export default function AppRoutes() {
                 <Route path="/saidas" element={<SaidasPage />} />
                 <Route path="/patrimonio" element={<PatrimonioPage />} />
                 <Route path="/orcamento" element={<OrcamentoPage />} />
+                <Route path="/modelos" element={<ModelosPage />} />
               </Route>
             </Route>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
