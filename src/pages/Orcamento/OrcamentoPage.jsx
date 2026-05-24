@@ -13,7 +13,6 @@ import { getStatusConfig } from '../../utils/budgetStatus'
 
 export default function OrcamentoPage() {
   const { token, usuarioId, user, updateUser } = useAuth()
-  const [modelos, setModelos] = useState([])
   const [resumo, setResumo] = useState(null)
   const [loading, setLoading] = useState(true)
   const [applyingId, setApplyingId] = useState(null)
@@ -33,8 +32,6 @@ export default function OrcamentoPage() {
       setLoading(true)
       setError('')
       try {
-        const list = await listModelos(token)
-        setModelos(list ?? [])
         if (user?.modeloId) {
           await loadResumo(user.modeloId)
         }
@@ -47,19 +44,6 @@ export default function OrcamentoPage() {
     load()
   }, [token, usuarioId, user?.modeloId])
 
-  const handleSelectModelo = async (modelo) => {
-    setApplyingId(modelo.id)
-    setError('')
-    try {
-      const updated = await setModelo(token, usuarioId, modelo.id)
-      updateUser(updated)
-      await loadResumo(modelo.id)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setApplyingId(null)
-    }
-  }
 
   if (loading) {
     return (
@@ -73,7 +57,7 @@ export default function OrcamentoPage() {
     <div>
       <PageHeader
         title="Orçamento"
-        description="Escolha um modelo de planejamento e acompanhe o uso por categoria."
+        description="Veja abaixo quanto você planejou gastar em cada categoria e quanto realmente gastou."
       />
 
       {error && (
@@ -81,54 +65,6 @@ export default function OrcamentoPage() {
           {error}
         </p>
       )}
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        {modelos.map((modelo) => {
-          const isActive = user?.modeloId === modelo.id
-          const totalPct = modelo.categorias?.reduce((s, c) => s + (c.valor ?? 0), 0) ?? 0
-          return (
-            <Card
-              key={modelo.id}
-              className={isActive ? 'ring-2 ring-emerald-500/50' : ''}
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100">{modelo.nome}</h3>
-                  <p className="mt-1 text-sm text-slate-500">{modelo.descricao}</p>
-                </div>
-                {isActive && (
-                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                    Ativo
-                  </span>
-                )}
-              </div>
-              <ul className="mt-4 space-y-2">
-                {modelo.categorias?.map((cat) => (
-                  <li key={cat.id} className="flex justify-between text-sm">
-                    <span className="text-slate-600 dark:text-slate-400">{cat.nome}</span>
-                    <span className="font-medium tabular-nums">
-                      {formatPercentFromDecimal(cat.valor)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-2 text-xs text-slate-400">Total alocado: {formatPercentFromDecimal(totalPct)}</p>
-              <Button
-                className="mt-4 w-full"
-                variant={isActive ? 'secondary' : 'primary'}
-                disabled={isActive || applyingId === modelo.id}
-                onClick={() => handleSelectModelo(modelo)}
-              >
-                {applyingId === modelo.id
-                  ? 'Aplicando...'
-                  : isActive
-                    ? 'Modelo em uso'
-                    : 'Usar este modelo'}
-              </Button>
-            </Card>
-          )
-        })}
-      </div>
 
       {resumo && (
         <Card
