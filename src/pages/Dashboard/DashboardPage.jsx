@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 import KpiCard from '../../components/charts/KpiCard'
 import StatusBadge from '../../components/charts/StatusBadge'
 import SuggestionsCard from '../../components/charts/SuggestionsCard'
+import ChartCard from '../../components/charts/ChartCard'
 import Card from '../../components/ui/Card'
 import Spinner from '../../components/ui/Spinner'
 import Table from '../../components/ui/Table'
-import SuggestionCard from '../../components/charts/SuggestionsCard'
 import { getResumoEntradas, getResumoSaidas } from '../../api/transacoes'
 import { getResumoPatrimonio } from '../../api/investimentos'
 import { getResumoOrcamento } from '../../api/usuario'
@@ -162,6 +162,8 @@ export default function DashboardPage() {
           </Table>
         </Card>
       )}
+
+      <div className= "mt-6"><ChartCard/></div>
 
       <div className="mt-6">
   <Card className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
