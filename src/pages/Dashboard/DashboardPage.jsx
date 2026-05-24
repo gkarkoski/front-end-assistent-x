@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import KpiCard from '../../components/charts/KpiCard'
 import StatusBadge from '../../components/charts/StatusBadge'
+import SuggestionsCard from '../../components/charts/SuggestionsCard'
 import Card from '../../components/ui/Card'
 import Spinner from '../../components/ui/Spinner'
 import Table from '../../components/ui/Table'
@@ -294,58 +295,60 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {orcamento ? (
-        <Card
-          title="Orçamento por categoria"
-          subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
-          className="mt-6"
-          action={
-            <Link
-              to="/orcamento"
-              className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
-            >
-              Ver detalhes →
-            </Link>
-          }
-        >
-          {alertas.length > 0 && (
-            <div className="mb-4 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
-              {alertas.length} categoria(s) acima do limite recomendado.
-            </div>
-          )}
-          <ul className="space-y-4">
-            {orcamento.categorias?.map((cat) => {
-              const cfg = getStatusConfig(cat.status)
-              return (
-                <li key={cat.categoriaId}>
-                  <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm font-medium">{cat.categoriaNome}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs tabular-nums text-slate-500">
-                        {cat.percentualUtilizado?.toFixed(0)}%
-                      </span>
-                      <StatusBadge status={cat.status} />
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        {orcamento ? (
+          <Card
+            title="Orçamento por categoria"
+            subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
+            action={
+              <Link
+                to="/orcamento"
+                className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+              >
+                Ver detalhes →
+              </Link>
+            }
+          >
+            {alertas.length > 0 && (
+              <div className="mb-4 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
+                {alertas.length} categoria(s) acima do limite recomendado.
+              </div>
+            )}
+            <ul className="space-y-4">
+              {orcamento.categorias?.map((cat) => {
+                const cfg = getStatusConfig(cat.status)
+                return (
+                  <li key={cat.categoriaId}>
+                    <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-sm font-medium">{cat.categoriaNome}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs tabular-nums text-slate-500">
+                          {cat.percentualUtilizado?.toFixed(0)}%
+                        </span>
+                        <StatusBadge status={cat.status} />
+                      </div>
                     </div>
-                  </div>
-                  <ProgressBar percent={cat.percentualUtilizado} barClassName={cfg.bar} />
-                  <p className="mt-1 text-xs text-slate-500">
-                    {formatCurrency(cat.valorUtilizado)} de {formatCurrency(cat.limite)}
-                  </p>
-                </li>
-              )
-            })}
-          </ul>
-        </Card>
-      ) : (
-        <Card title="Orçamento" className="mt-6">
-          <p className="text-sm text-slate-500">
-            Nenhum modelo vinculado.{' '}
-            <Link to="/orcamento" className="text-emerald-600 hover:underline">
-              Escolha um plano
-            </Link>
-          </p>
-        </Card>
-      )}
+                    <ProgressBar percent={cat.percentualUtilizado} barClassName={cfg.bar} />
+                    <p className="mt-1 text-xs text-slate-500">
+                      {formatCurrency(cat.valorUtilizado)} de {formatCurrency(cat.limite)}
+                    </p>
+                  </li>
+                )
+              })}
+            </ul>
+          </Card>
+        ) : (
+          <Card title="Orçamento">
+            <p className="text-sm text-slate-500">
+              Nenhum modelo vinculado.{' '}
+              <Link to="/orcamento" className="text-emerald-600 hover:underline">
+                Escolha um plano
+              </Link>
+            </p>
+          </Card>
+        )}
+        <SuggestionsCard />
+      </div>
     </div>
   )
 }
