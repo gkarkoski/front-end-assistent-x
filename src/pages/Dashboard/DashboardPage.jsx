@@ -6,6 +6,7 @@ import SuggestionsCard from '../../components/charts/SuggestionsCard'
 import Card from '../../components/ui/Card'
 import Spinner from '../../components/ui/Spinner'
 import Table from '../../components/ui/Table'
+import SuggestionCard from '../../components/charts/SuggestionsCard'
 import { getResumoEntradas, getResumoSaidas } from '../../api/transacoes'
 import { getResumoPatrimonio } from '../../api/investimentos'
 import { getResumoOrcamento } from '../../api/usuario'
@@ -320,7 +321,7 @@ export default function DashboardPage() {
             </p>
           </Card>
         )}
-        <SuggestionsCard />
+        <div><SuggestionsCard /></div>
       </div>
     </div>
   )
