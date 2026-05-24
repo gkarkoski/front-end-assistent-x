@@ -6,6 +6,8 @@ const variants = {
   danger: 'bg-rose-600 text-white hover:bg-rose-700',
   ghost:
     'bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
+    outline:
+  'border border-slate-300 bg-transparent text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800',
 }
 
 const sizes = {
