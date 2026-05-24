@@ -53,7 +53,7 @@ export default function TransactionFilters({
           onChange={(e) => setMaxValue(e.target.value)}
           className="flex-1"
         />
-        <Button variant="ghost" size="sm" onClick={onReset} className="mb-0.5 shrink-0">
+        <Button variant="outline" size="sm" onClick={onReset} className="mb-0.5 shrink-0 hover:bg-slate-100 dark:hover:bg-slate-800">
           Limpar
         </Button>
       </div>

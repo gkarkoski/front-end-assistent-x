@@ -23,13 +23,7 @@ export default function Modal({ open, title, children, onClose, footer }) {
           </button>
         </div>
         <div>{children}</div>
-        {footer ?? (
-          <div className="mt-6 flex justify-end gap-2">
-            <Button variant="secondary" onClick={onClose}>
-              Cancelar
-            </Button>
-          </div>
-        )}
+        {footer && <div className="mt-6">{footer}</div>}
       </div>
     </div>
   )
