@@ -1,4 +1,4 @@
-# Assistentx — Frontend
+# AssistentX — Frontend
 
 SPA React para finanças pessoais, integrada ao backend Java em `FullStackAssistentx`.
 
@@ -54,9 +54,9 @@ npm run preview
 
 ```
 src/
-├── api/          # Integração REST
-├── components/   # UI reutilizável
-├── context/      # Auth e tema (dark mode)
+├── api/
+├── components/
+├── context/
 ├── hooks/
 ├── pages/
 ├── routes/

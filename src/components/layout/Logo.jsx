@@ -9,7 +9,7 @@ export default function Logo({ compact = false }) {
       {!compact && (
         <div>
           <span className="block text-sm font-bold tracking-tight text-slate-900 dark:text-white">
-            Assistentx
+            AssistentX
           </span>
           <span className="block text-[10px] uppercase tracking-widest text-slate-500 dark:text-slate-400">
             Finanças pessoais

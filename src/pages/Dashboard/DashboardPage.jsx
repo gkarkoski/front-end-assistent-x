@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import KpiCard from '../../components/charts/KpiCard'
 import StatusBadge from '../../components/charts/StatusBadge'
+import SuggestionsCard from '../../components/charts/SuggestionsCard'
+import ChartCard from '../../components/charts/ChartCard'
 import Card from '../../components/ui/Card'
 import Spinner from '../../components/ui/Spinner'
 import Table from '../../components/ui/Table'
 import { getResumoEntradas, getResumoSaidas } from '../../api/transacoes'
-import { listPatrimonio, getResumoPatrimonio } from '../../api/investimentos'
+import { getResumoPatrimonio } from '../../api/investimentos'
 import { getResumoOrcamento } from '../../api/usuario'
 import { useAuth } from '../../context/AuthContext'
 import { formatCurrency } from '../../utils/currency'
@@ -20,7 +22,6 @@ export default function DashboardPage() {
   const [entradas, setEntradas] = useState(null)
   const [saidas, setSaidas] = useState(null)
   const [patrimonio, setPatrimonio] = useState(null)
-  const [investimentos, setInvestimentos] = useState([])
   const [orcamento, setOrcamento] = useState(null)
 
   useEffect(() => {
@@ -28,16 +29,14 @@ export default function DashboardPage() {
       setLoading(true)
       setError('')
       try {
-        const [e, s, p, inv] = await Promise.all([
+        const [e, s, p] = await Promise.all([
           getResumoEntradas(token, usuarioId),
           getResumoSaidas(token, usuarioId),
           getResumoPatrimonio(token, usuarioId),
-          listPatrimonio(token, usuarioId),
         ])
         setEntradas(e)
         setSaidas(s)
         setPatrimonio(p)
-        setInvestimentos(inv ?? [])
 
         if (user?.modeloId) {
           const o = await getResumoOrcamento(token, usuarioId, user.modeloId)
@@ -65,10 +64,6 @@ export default function DashboardPage() {
     orcamento?.categorias?.filter((c) =>
       ['POUCO_ACIMA_DO_LIMITE', 'MUITO_ACIMA_DO_LIMITE'].includes(c.status),
     ) ?? []
-
-  const patrimonioTotal = investimentos.reduce((sum, inv) => sum + (inv.valorAtual ?? 0), 0)
-  const receitaMensalTotal = investimentos.reduce((sum, inv) => sum + (inv.ultimaMensalidade ?? 0), 0)
-  const rendimentoMedio = patrimonioTotal > 0 ? receitaMensalTotal / patrimonioTotal : 0
 
   return (
     <div>
@@ -104,8 +99,8 @@ export default function DashboardPage() {
         />
         <KpiCard
           title="Patrimônio"
-          value={formatCurrency(patrimonioTotal)}
-          subtitle={`Rendimento: ${(rendimentoMedio * 100).toFixed(2)}% a.m.`}
+          value={formatCurrency(patrimonio?.valorAtualTotal)}
+          subtitle={`Rendimento: ${((patrimonio?.jurosEstimados ?? 0) * 100).toFixed(2)}% a.m.`}
           accent="text-sky-600 dark:text-sky-400"
           icon="💎"
           to="/patrimonio"
@@ -119,7 +114,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {investimentos.length > 0 && (
+      {patrimonio?.classificacoes?.length > 0 && (
         <Card
           title="Patrimônio Investido"
           className="mt-6"
@@ -134,38 +129,41 @@ export default function DashboardPage() {
         >
           <Table
             headers={[
-              'Investimento',
+              'Classificação',
               'Valor (R$)',
               'Rendimento (%)',
               'Receita Mensal (R$)',
             ]}
+            columnWidths={['35%', '25%', '20%', '20%']}
           >
-            {investimentos.map((inv) => (
+            {patrimonio.classificacoes.map((c) => (
               <tr
-                key={inv.investimentoId}
+                key={c.classificacao}
                 className="border-b border-slate-100 dark:border-slate-800 last:border-0"
               >
-                <td className="px-4 py-3 font-medium">{inv.tipoInvestimento}</td>
-                <td className="px-4 py-3 tabular-nums">{formatCurrency(inv.valorAtual)}</td>
+                <td className="px-4 py-3 font-medium">{c.classificacao}</td>
+                <td className="px-4 py-3 tabular-nums">{formatCurrency(c.valorAtualTotal)}</td>
                 <td className="px-4 py-3 tabular-nums">
-                  {((inv.jurosEstimados ?? 0) * 100).toFixed(1)}%
+                  {((c.jurosEstimados ?? 0) * 100).toFixed(1)}%
                 </td>
                 <td className="px-4 py-3 tabular-nums text-emerald-600 dark:text-emerald-400">
-                  {formatCurrency(inv.ultimaMensalidade)}
+                  {formatCurrency(c.ultimaMensalidade)}
                 </td>
               </tr>
             ))}
             <tr className="border-b-2 border-slate-200 dark:border-slate-700 bg-slate-500/5 dark:bg-white/5 font-semibold">
               <td className="px-4 py-3">Total</td>
-              <td className="px-4 py-3 tabular-nums">{formatCurrency(patrimonioTotal)}</td>
-              <td className="px-4 py-3 tabular-nums">{(rendimentoMedio * 100).toFixed(2)}%</td>
+              <td className="px-4 py-3 tabular-nums">{formatCurrency(patrimonio?.valorAtualTotal ?? 0)}</td>
+              <td className="px-4 py-3 tabular-nums">{((patrimonio?.jurosEstimados ?? 0) * 100).toFixed(2)}%</td>
               <td className="px-4 py-3 tabular-nums text-emerald-600 dark:text-emerald-400">
-                {formatCurrency(receitaMensalTotal)}
+                {formatCurrency(patrimonio?.ultimaMensalidade ?? 0)}
               </td>
             </tr>
           </Table>
         </Card>
       )}
+
+      <div className= "mt-6"><ChartCard/></div>
 
       <div className="mt-6">
   <Card className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -273,79 +271,60 @@ export default function DashboardPage() {
   </Card>
 </div>
 
-      {patrimonio?.classificacoes?.length > 0 && (
-        <Card title="Patrimônio por classificação" className="mt-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            {patrimonio.classificacoes.map((c) => (
-              <div
-                key={c.classificacao}
-                className="rounded-xl border border-slate-100 p-4 dark:border-slate-800"
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        {orcamento ? (
+          <Card
+            title="Orçamento por categoria"
+            subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
+            action={
+              <Link
+                to="/orcamento"
+                className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
               >
-                <p className="text-sm font-medium">{c.classificacao}</p>
-                <p className="mt-1 text-lg font-bold tabular-nums text-sky-600 dark:text-sky-400">
-                  {formatCurrency(c.valorAtualTotal)}
-                </p>
-                <p className="text-xs text-slate-500">
-                  Inicial: {formatCurrency(c.valorInicialTotal)}
-                </p>
+                Ver detalhes →
+              </Link>
+            }
+          >
+            {alertas.length > 0 && (
+              <div className="mb-4 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
+                {alertas.length} categoria(s) acima do limite recomendado.
               </div>
-            ))}
-          </div>
-        </Card>
-      )}
-
-      {orcamento ? (
-        <Card
-          title="Orçamento por categoria"
-          subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
-          className="mt-6"
-          action={
-            <Link
-              to="/orcamento"
-              className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
-            >
-              Ver detalhes →
-            </Link>
-          }
-        >
-          {alertas.length > 0 && (
-            <div className="mb-4 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
-              {alertas.length} categoria(s) acima do limite recomendado.
-            </div>
-          )}
-          <ul className="space-y-4">
-            {orcamento.categorias?.map((cat) => {
-              const cfg = getStatusConfig(cat.status)
-              return (
-                <li key={cat.categoriaId}>
-                  <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm font-medium">{cat.categoriaNome}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs tabular-nums text-slate-500">
-                        {cat.percentualUtilizado?.toFixed(0)}%
-                      </span>
-                      <StatusBadge status={cat.status} />
+            )}
+            <ul className="space-y-4">
+              {orcamento.categorias?.map((cat) => {
+                const cfg = getStatusConfig(cat.status)
+                return (
+                  <li key={cat.categoriaId}>
+                    <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-sm font-medium">{cat.categoriaNome}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs tabular-nums text-slate-500">
+                          {cat.percentualUtilizado?.toFixed(0)}%
+                        </span>
+                        <StatusBadge status={cat.status} />
+                      </div>
                     </div>
-                  </div>
-                  <ProgressBar percent={cat.percentualUtilizado} barClassName={cfg.bar} />
-                  <p className="mt-1 text-xs text-slate-500">
-                    {formatCurrency(cat.valorUtilizado)} de {formatCurrency(cat.limite)}
-                  </p>
-                </li>
-              )
-            })}
-          </ul>
-        </Card>
-      ) : (
-        <Card title="Orçamento" className="mt-6">
-          <p className="text-sm text-slate-500">
-            Nenhum modelo vinculado.{' '}
-            <Link to="/orcamento" className="text-emerald-600 hover:underline">
-              Escolha um plano
-            </Link>
-          </p>
-        </Card>
-      )}
+                    <ProgressBar percent={cat.percentualUtilizado} barClassName={cfg.bar} />
+                    <p className="mt-1 text-xs text-slate-500">
+                      {formatCurrency(cat.valorUtilizado)} de {formatCurrency(cat.limite)}
+                    </p>
+                  </li>
+                )
+              })}
+            </ul>
+          </Card>
+        ) : (
+          <Card title="Orçamento">
+            <p className="text-sm text-slate-500">
+              Nenhum modelo vinculado.{' '}
+              <Link to="/orcamento" className="text-emerald-600 hover:underline">
+                Escolha um plano
+              </Link>
+            </p>
+          </Card>
+        )}
+        <div><SuggestionsCard /></div>
+      </div>
     </div>
   )
 }
