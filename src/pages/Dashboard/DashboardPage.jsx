@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import KpiCard from '../../components/charts/KpiCard'
-import OriginBreakdown from '../../components/charts/OriginBreakdown'
 import StatusBadge from '../../components/charts/StatusBadge'
 import Card from '../../components/ui/Card'
 import Spinner from '../../components/ui/Spinner'
@@ -168,22 +167,111 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Card title="Entradas por origem">
-          <OriginBreakdown
-            origens={entradas?.origens}
-            total={entradas?.valorTotalEntradas}
-            colorClass="bg-emerald-500"
-          />
-        </Card>
-        <Card title="Saídas por origem">
-          <OriginBreakdown
-            origens={saidas?.origens}
-            total={saidas?.valorTotalSaidas}
-            colorClass="bg-rose-500"
-          />
-        </Card>
+      <div className="mt-6">
+  <Card className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="space-y-8">
+
+      {/* Entradas */}
+      <div>
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+            Entradas por origem
+          </h3>
+
+          <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+            {formatCurrency(entradas?.valorTotalEntradas ?? 0)}
+          </span>
+        </div>
+
+        <div className="space-y-4">
+          {entradas?.origens?.map((origem) => {
+            const percent =
+              (origem.valorTotal / (entradas?.valorTotalEntradas || 1)) * 100
+
+            return (
+              <div key={origem.origemId} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-700 dark:text-slate-300">
+                    {origem.origemNome}
+                  </span>
+
+                  <span className="text-sm font-medium tabular-nums text-slate-900 dark:text-slate-100">
+                    {formatCurrency(origem.valorTotal)}
+                  </span>
+                </div>
+
+                <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                  <div
+                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+              </div>
+            )
+          })}
+
+          <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-700">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              Total
+            </span>
+
+            <span className="text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+              {formatCurrency(entradas?.valorTotalEntradas ?? 0)}
+            </span>
+          </div>
+        </div>
       </div>
+
+      {/* Saídas */}
+      <div className="border-t border-slate-200 pt-8 dark:border-slate-800">
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+            Saídas por origem
+          </h3>
+        </div>
+
+        <div className="space-y-4">
+          {saidas?.origens?.map((origem) => {
+            const percent =
+              (origem.valorTotal / (saidas?.valorTotalSaidas || 1)) * 100
+
+            return (
+              <div key={origem.origemId} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-700 dark:text-slate-300">
+                    {origem.origemNome}
+                  </span>
+
+                  <span className="text-sm font-medium tabular-nums text-slate-900 dark:text-slate-100">
+                    {formatCurrency(origem.valorTotal)}
+                  </span>
+                </div>
+
+                <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                  <div
+                    className="h-full rounded-full bg-rose-500 transition-all duration-500"
+                    style={{ width: `${percent}%` }}
+                  />
+                </div>
+              </div>
+            )
+          })}
+
+          <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-700">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              Total
+            </span>
+
+            <span className="text-sm font-bold tabular-nums text-rose-600 dark:text-rose-400">
+              {formatCurrency(saidas?.valorTotalSaidas ?? 0)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </Card>
+</div>
 
       {patrimonio?.classificacoes?.length > 0 && (
         <Card title="Patrimônio por classificação" className="mt-6">
