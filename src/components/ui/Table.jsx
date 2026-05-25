@@ -1,4 +1,10 @@
-export default function Table({ headers, children, className = '', columnWidths = [] }) {
+export default function Table({
+  headers,
+  children,
+  className = '',
+  columnWidths = [],
+  columnAlignments = [],
+}) {
   return (
     <div className={`overflow-x-auto ${className}`}>
       <table className="w-full text-sm">
@@ -7,7 +13,13 @@ export default function Table({ headers, children, className = '', columnWidths 
             {headers.map((header, index) => (
               <th
                 key={index}
-                className="px-4 py-3 text-left font-medium text-slate-600 dark:text-slate-400"
+                className={`px-4 py-3 font-medium text-slate-600 dark:text-slate-400 ${
+                  columnAlignments[index] === 'right'
+                    ? 'text-right'
+                    : columnAlignments[index] === 'center'
+                    ? 'text-center'
+                    : 'text-left'
+                }`}
                 style={columnWidths[index] ? { width: columnWidths[index] } : {}}
               >
                 {header}
@@ -15,6 +27,7 @@ export default function Table({ headers, children, className = '', columnWidths 
             ))}
           </tr>
         </thead>
+
         <tbody>{children}</tbody>
       </table>
     </div>

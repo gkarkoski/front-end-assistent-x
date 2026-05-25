@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import Button from '../ui/Button'
 import { useAuth } from '../../context/AuthContext'
-import Logo from './Logo'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: '📊' },
@@ -26,13 +25,13 @@ export default function Sidebar({ mobileOpen, onClose }) {
     <>
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/50 xl:hidden"
           onClick={onClose}
           aria-hidden
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-900 lg:z-40 ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-900 xl:z-40 ${mobileOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'
           }`}
       >
 
