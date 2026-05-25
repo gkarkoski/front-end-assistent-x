@@ -3,7 +3,7 @@ import Logo from './Logo'
 
 export default function Header({ onMenuClick }) {
   return (
-    <header className="grid h-16 grid-cols-3 items-center border-b border-slate-200 bg-white/80 px-4 backdrop-blur-md dark:border-slate-800 dark:bg-slate-950/80 xl:px-6">
+    <header className="grid h-16 grid-cols-3 items-center border-b border-slate-200 bg-[#faf2d3] px-4 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900 xl:px-6">
 
       <div className="flex justify-start">
         <button
