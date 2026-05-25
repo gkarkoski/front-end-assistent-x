@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import Button from '../ui/Button'
 import { useAuth } from '../../context/AuthContext'
-import Logo from './Logo'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: '📊' },
@@ -26,17 +25,17 @@ export default function Sidebar({ mobileOpen, onClose }) {
     <>
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/50 xl:hidden"
           onClick={onClose}
           aria-hidden
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-900 lg:z-40 ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-64 flex-col border-r border-slate-200 bg-white transition-transform dark:border-slate-800 dark:bg-slate-900 xl:z-40 ${mobileOpen ? 'translate-x-0' : '-translate-x-full xl:translate-x-0'
           }`}
       >
 
-        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3 bg-[#faf2d3] dark:bg-slate-900">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -55,7 +54,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
           ))}
         </nav>
 
-        <div className="mt-auto shrink-0 border-t border-slate-200 p-4 dark:border-slate-800">
+        <div className="mt-auto shrink-0 border-t border-slate-200 p-4 dark:border-slate-800 bg-[#faf2d3] dark:bg-slate-900">
           <div className="flex items-center gap-2">
             <div
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-sm font-semibold text-emerald-700 dark:text-emerald-400"

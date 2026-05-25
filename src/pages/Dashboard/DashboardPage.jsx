@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import KpiCard from '../../components/charts/KpiCard'
 import StatusBadge from '../../components/charts/StatusBadge'
 import SuggestionsCard from '../../components/charts/SuggestionsCard'
+import BudgetDonutChart from '../../components/charts/BudgetDonutChart'
 import ChartCard from '../../components/charts/ChartCard'
 import Card from '../../components/ui/Card'
 import Spinner from '../../components/ui/Spinner'
@@ -82,7 +83,8 @@ export default function DashboardPage() {
         </p>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/* KPIs */}
+      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <KpiCard
           title="Entradas"
           value={formatCurrency(entradas?.valorTotalEntradas)}
@@ -90,6 +92,7 @@ export default function DashboardPage() {
           icon="↗"
           to="/entradas"
         />
+
         <KpiCard
           title="Saídas"
           value={formatCurrency(saidas?.valorTotalSaidas)}
@@ -97,6 +100,7 @@ export default function DashboardPage() {
           icon="↘"
           to="/saidas"
         />
+
         <KpiCard
           title="Patrimônio"
           value={formatCurrency(patrimonio?.valorAtualTotal)}
@@ -105,6 +109,7 @@ export default function DashboardPage() {
           icon="💎"
           to="/patrimonio"
         />
+
         <KpiCard
           title="Saldo"
           value={formatCurrency(saldo)}
@@ -112,6 +117,127 @@ export default function DashboardPage() {
           accent={saldo >= 0 ? 'text-emerald-600' : 'text-rose-600'}
           icon="⚖"
         />
+      </div>
+
+      {/* Orçamento + Sugestões */}
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+
+        <Card 
+          title="Orçamento"
+          subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
+          action={
+            <Link
+              to="/orcamento"
+              className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+            >
+              Ver detalhes →
+            </Link>
+          }
+        >
+          {alertas.length > 0 && (
+            <div className="mb-6 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
+              {alertas.length} categoria(s) acima do limite recomendado.
+            </div>
+          )}
+
+          <BudgetDonutChart
+            categorias={orcamento.categorias}
+            total={orcamento.orcamento}
+            formatCurrency={formatCurrency}
+          />
+        </Card>
+
+        <SuggestionsCard />
+      </div>
+
+      {/* Entradas */}
+      <div className="mt-6">
+        <Card className="rounded-2xl border border-slate-200 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <div className="mb-6 flex items-center justify-between">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                Entradas por origem
+              </h3>
+
+              <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                {formatCurrency(entradas?.valorTotalEntradas ?? 0)}
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {entradas?.origens?.map((origem) => {
+                const percent =
+                  (origem.valorTotal / (entradas?.valorTotalEntradas || 1)) * 100
+
+                return (
+                  <div key={origem.origemId} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-700 dark:text-slate-300">
+                        {origem.origemNome}
+                      </span>
+
+                      <span className="text-sm font-medium tabular-nums text-slate-900 dark:text-slate-100">
+                        {formatCurrency(origem.valorTotal)}
+                      </span>
+                    </div>
+
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                      <div
+                        className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Saídas */}
+      <div className="mt-6">
+        <Card className="rounded-2xl border border-slate-200 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <div className="mb-6 flex items-center justify-between">
+              <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
+                Saídas por origem
+              </h3>
+
+              <span className="text-sm font-medium text-rose-600 dark:text-rose-400">
+                {formatCurrency(saidas?.valorTotalSaidas ?? 0)}
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {saidas?.origens?.map((origem) => {
+                const percent =
+                  (origem.valorTotal / (saidas?.valorTotalSaidas || 1)) * 100
+
+                return (
+                  <div key={origem.origemId} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-700 dark:text-slate-300">
+                        {origem.origemNome}
+                      </span>
+
+                      <span className="text-sm font-medium tabular-nums text-slate-900 dark:text-slate-100">
+                        {formatCurrency(origem.valorTotal)}
+                      </span>
+                    </div>
+
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                      <div
+                        className="h-full rounded-full bg-rose-500 transition-all duration-500"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </Card>
       </div>
 
       {patrimonio?.classificacoes?.length > 0 && (
@@ -135,6 +261,7 @@ export default function DashboardPage() {
               'Receita Mensal (R$)',
             ]}
             columnWidths={['35%', '25%', '20%', '20%']}
+            columnAlignments={['left', 'left', 'left', 'right']}
           >
             {patrimonio.classificacoes.map((c) => (
               <tr
@@ -146,7 +273,7 @@ export default function DashboardPage() {
                 <td className="px-4 py-3 tabular-nums">
                   {((c.jurosEstimados ?? 0) * 100).toFixed(1)}%
                 </td>
-                <td className="px-4 py-3 tabular-nums text-emerald-600 dark:text-emerald-400">
+                <td className="px-4 py-3 tabular-nums text-emerald-600 dark:text-emerald-400 text-right">
                   {formatCurrency(c.ultimaMensalidade)}
                 </td>
               </tr>
@@ -155,7 +282,7 @@ export default function DashboardPage() {
               <td className="px-4 py-3">Total</td>
               <td className="px-4 py-3 tabular-nums">{formatCurrency(patrimonio?.valorAtualTotal ?? 0)}</td>
               <td className="px-4 py-3 tabular-nums">{((patrimonio?.jurosEstimados ?? 0) * 100).toFixed(2)}%</td>
-              <td className="px-4 py-3 tabular-nums text-emerald-600 dark:text-emerald-400">
+              <td className="px-4 py-3 tabular-nums text-emerald-600 dark:text-emerald-400 text-right">
                 {formatCurrency(patrimonio?.ultimaMensalidade ?? 0)}
               </td>
             </tr>
@@ -163,168 +290,11 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      <div className= "mt-6"><ChartCard/></div>
-
-      <div className="mt-6">
-  <Card className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-    <div className="space-y-8">
-
-      {/* Entradas */}
-      <div>
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-            Entradas por origem
-          </h3>
-
-          <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-            {formatCurrency(entradas?.valorTotalEntradas ?? 0)}
-          </span>
-        </div>
-
-        <div className="space-y-4">
-          {entradas?.origens?.map((origem) => {
-            const percent =
-              (origem.valorTotal / (entradas?.valorTotalEntradas || 1)) * 100
-
-            return (
-              <div key={origem.origemId} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-700 dark:text-slate-300">
-                    {origem.origemNome}
-                  </span>
-
-                  <span className="text-sm font-medium tabular-nums text-slate-900 dark:text-slate-100">
-                    {formatCurrency(origem.valorTotal)}
-                  </span>
-                </div>
-
-                <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                  <div
-                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
-              </div>
-            )
-          })}
-
-          <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-700">
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Total
-            </span>
-
-            <span className="text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
-              {formatCurrency(entradas?.valorTotalEntradas ?? 0)}
-            </span>
-          </div>
-        </div>
+      <div className= "mt-6">
+        <ChartCard/>
       </div>
 
-      {/* Saídas */}
-      <div className="border-t border-slate-200 pt-8 dark:border-slate-800">
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-            Saídas por origem
-          </h3>
-        </div>
-
-        <div className="space-y-4">
-          {saidas?.origens?.map((origem) => {
-            const percent =
-              (origem.valorTotal / (saidas?.valorTotalSaidas || 1)) * 100
-
-            return (
-              <div key={origem.origemId} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-700 dark:text-slate-300">
-                    {origem.origemNome}
-                  </span>
-
-                  <span className="text-sm font-medium tabular-nums text-slate-900 dark:text-slate-100">
-                    {formatCurrency(origem.valorTotal)}
-                  </span>
-                </div>
-
-                <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                  <div
-                    className="h-full rounded-full bg-rose-500 transition-all duration-500"
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
-              </div>
-            )
-          })}
-
-          <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-700">
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Total
-            </span>
-
-            <span className="text-sm font-bold tabular-nums text-rose-600 dark:text-rose-400">
-              {formatCurrency(saidas?.valorTotalSaidas ?? 0)}
-            </span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </Card>
-</div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        {orcamento ? (
-          <Card
-            title="Orçamento por categoria"
-            subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
-            action={
-              <Link
-                to="/orcamento"
-                className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
-              >
-                Ver detalhes →
-              </Link>
-            }
-          >
-            {alertas.length > 0 && (
-              <div className="mb-4 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
-                {alertas.length} categoria(s) acima do limite recomendado.
-              </div>
-            )}
-            <ul className="space-y-4">
-              {orcamento.categorias?.map((cat) => {
-                const cfg = getStatusConfig(cat.status)
-                return (
-                  <li key={cat.categoriaId}>
-                    <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-sm font-medium">{cat.categoriaNome}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs tabular-nums text-slate-500">
-                          {cat.percentualUtilizado?.toFixed(0)}%
-                        </span>
-                        <StatusBadge status={cat.status} />
-                      </div>
-                    </div>
-                    <ProgressBar percent={cat.percentualUtilizado} barClassName={cfg.bar} />
-                    <p className="mt-1 text-xs text-slate-500">
-                      {formatCurrency(cat.valorUtilizado)} de {formatCurrency(cat.limite)}
-                    </p>
-                  </li>
-                )
-              })}
-            </ul>
-          </Card>
-        ) : (
-          <Card title="Orçamento">
-            <p className="text-sm text-slate-500">
-              Nenhum modelo vinculado.{' '}
-              <Link to="/orcamento" className="text-emerald-600 hover:underline">
-                Escolha um plano
-              </Link>
-            </p>
-          </Card>
-        )}
-        <div><SuggestionsCard /></div>
-      </div>
+      
     </div>
   )
 }

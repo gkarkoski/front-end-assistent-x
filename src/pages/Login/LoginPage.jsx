@@ -49,7 +49,7 @@ export default function LoginPage() {
         <p className="text-xs text-slate-500">Projeto acadêmico FIAP</p>
       </div>
 
-      <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12">
+      <div className="bg-[#faf2d3] dark:bg-slate-950 flex flex-1 flex-col justify-center px-6 py-12 sm:px-12">
         <div className="absolute right-4 top-4 lg:right-8 lg:top-8">
           <ThemeToggle />
         </div>
