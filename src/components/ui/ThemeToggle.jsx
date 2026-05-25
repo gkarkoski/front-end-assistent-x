@@ -44,7 +44,7 @@ export default function ThemeToggle({ className = '' }) {
       aria-checked={isDark}
       aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
       onClick={toggleTheme}
-      className={`group relative inline-flex h-9 w-[4.25rem] shrink-0 items-center rounded-full border border-slate-200/80 bg-slate-100 p-1 shadow-inner transition-colors duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 dark:border-slate-700 dark:bg-slate-800 ${className}`}
+      className={`group relative inline-flex h-9 w-[4.25rem] shrink-0 items-center rounded-full border border-slate-200/80 p-1 shadow-inner transition-colors duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 dark:border-slate-700 dark:bg-slate-800 bg-[#fdeeb2] ${className}`}
     >
       <SunIcon
         className={`pointer-events-none absolute left-2 h-3.5 w-3.5 text-amber-500 transition-all duration-500 ${
@@ -57,7 +57,7 @@ export default function ThemeToggle({ className = '' }) {
         }`}
       />
       <span
-        className={`relative z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white text-amber-500 shadow-md ring-1 ring-slate-200/60 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-active:scale-95 dark:bg-slate-600 dark:text-sky-300 dark:ring-slate-600 ${
+        className={`relative z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[#fcf9ed]  text-amber-500 shadow-md ring-1 ring-slate-200/60 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-active:scale-95 dark:bg-slate-600 dark:text-sky-300 dark:ring-slate-600 ${
           isDark ? 'translate-x-[2rem]' : 'translate-x-0'
         }`}
       >

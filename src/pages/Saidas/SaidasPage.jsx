@@ -145,7 +145,7 @@ export default function SaidasPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/80 dark:border-slate-800 dark:bg-slate-800/50">
+                <tr className="border-b border-slate-100 dark:border-slate-800 dark:bg-slate-800/50">
                   <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Data</th>
                   <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400">Origem</th>
                   <th className="px-4 py-3 font-medium text-slate-600 dark:text-slate-400 text-right">Valor</th>

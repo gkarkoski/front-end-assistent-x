@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 export default function KpiCard({ title, value, subtitle, icon, accent, to }) {
   const content = (
     <div
-      className={`h-full rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80 ${to ? 'cursor-pointer' : ''}`}
+      className={`h-full rounded-2xl border border-slate-200/80 bg-[#faf2d3]  p-5 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80 ${to ? 'cursor-pointer' : ''}`}
     >
       <div className="flex items-start justify-between">
         <div>
@@ -16,7 +16,7 @@ export default function KpiCard({ title, value, subtitle, icon, accent, to }) {
           </p>
         </div>
         {icon && (
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-lg dark:bg-slate-800">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f6e7b0] text-lg dark:bg-slate-800">
             {icon}
           </div>
         )}
