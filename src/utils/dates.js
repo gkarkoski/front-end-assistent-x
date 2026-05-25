@@ -21,8 +21,8 @@ export function formatDisplayDate(isoString) {
   if (!isoString) return '—'
   return new Date(isoString).toLocaleString('pt-BR', {
     day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+    month: '2-digit',
+    year: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
   })
