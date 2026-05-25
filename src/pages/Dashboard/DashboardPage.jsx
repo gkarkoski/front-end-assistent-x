@@ -122,30 +122,44 @@ export default function DashboardPage() {
       {/* Orçamento + Sugestões */}
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
 
-        <Card 
-          title="Orçamento"
-          subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
-          action={
-            <Link
-              to="/orcamento"
-              className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
-            >
-              Ver detalhes →
-            </Link>
-          }
-        >
-          {alertas.length > 0 && (
-            <div className="mb-6 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
-              {alertas.length} categoria(s) acima do limite recomendado.
-            </div>
-          )}
+        {orcamento ? (
+          <Card
+            title="Orçamento"
+            subtitle={`Base: ${formatCurrency(orcamento.orcamento)} · ${user?.modeloNome}`}
+            action={
+              <Link
+                to="/orcamento"
+                className="text-xs font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+              >
+                Ver detalhes →
+              </Link>
+            }
+          >
+            {alertas.length > 0 && (
+              <div className="mb-6 rounded-xl bg-orange-500/10 px-4 py-3 text-sm text-orange-800 dark:text-orange-200">
+                {alertas.length} categoria(s) acima do limite recomendado.
+              </div>
+            )}
 
-          <BudgetDonutChart
-            categorias={orcamento.categorias}
-            total={orcamento.orcamento}
-            formatCurrency={formatCurrency}
-          />
-        </Card>
+            <BudgetDonutChart
+              categorias={orcamento.categorias}
+              total={orcamento.orcamento}
+              formatCurrency={formatCurrency}
+            />
+          </Card>
+        ) : (
+          <Card title="Orçamento">
+            <p className="text-sm text-slate-500">
+              Nenhum modelo vinculado.{' '}
+              <Link
+                to="/orcamento"
+                className="text-emerald-600 hover:underline"
+              >
+                Escolha um plano
+              </Link>
+            </p>
+          </Card>
+        )}
 
         <SuggestionsCard />
       </div>
